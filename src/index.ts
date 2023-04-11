@@ -1,6 +1,10 @@
 import jwt from 'jsonwebtoken';
 import { InvalidArgumentsError } from '@socket-mesh/errors';
 
+export interface AuthTokenOptions extends jwt.SignOptions {
+	rejectOnFailedDelivery?: boolean;
+}
+
 export class AuthEngine {
 	verifyToken(signedToken: string, key: jwt.Secret | jwt.GetPublicKeyOrSecret, options: jwt.VerifyOptions & { complete: true; }): Promise<string | jwt.JwtPayload> {
 		const jwtOptions = Object.assign({}, options || {});
