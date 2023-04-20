@@ -6,20 +6,20 @@ export interface AuthTokenOptions extends jwt.SignOptions {
 }
 
 export class AuthEngine {
-	verifyToken(signedToken: string, key: jwt.Secret | jwt.GetPublicKeyOrSecret, options: jwt.VerifyOptions & { complete: true; }): Promise<string | jwt.JwtPayload> {
+	verifyToken(signedToken: string, key: jwt.Secret | jwt.GetPublicKeyOrSecret, options: jwt.VerifyOptions): Promise<jwt.JwtPayload> {
 		const jwtOptions = Object.assign({}, options || {});
-
-		delete (jwtOptions as any)['socket'];
 
 		if (typeof signedToken === 'string' || signedToken == null) {
 			return new Promise((resolve, reject) => {
-				jwt.verify(signedToken || '', key, jwtOptions, (err, token) => {
+				const cb: jwt.VerifyCallback<jwt.JwtPayload> = (err, token) => {
 					if (err) {
 						reject(err);
 						return;
 					}
 					resolve(token);
-				});
+				};
+				
+				jwt.verify(signedToken || '', key, jwtOptions, cb); 
 			});
 		}
 
@@ -28,10 +28,10 @@ export class AuthEngine {
 		);
 	}
 
-	signToken(token: string | object | Buffer, key: jwt.Secret, options: jwt.SignOptions): Promise<string | undefined> {
+	signToken(token: string | object | Buffer, key: jwt.Secret, options: jwt.SignOptions): Promise<string> {
 		const jwtOptions = Object.assign({}, options || {});
 
-		return new Promise<string | undefined>((resolve, reject) => {
+		return new Promise<string>((resolve, reject) => {
 			jwt.sign(token, key, jwtOptions, (err, signedToken) => {
 				if (err) {
 					reject(err);
