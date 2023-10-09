@@ -1,4 +1,4 @@
-import { AuthEngine } from "../src";
+import { AuthEngine } from "../src/index.js";
 import { InvalidArgumentsError } from '@socket-mesh/errors';
 import jwt from 'jsonwebtoken';
 
