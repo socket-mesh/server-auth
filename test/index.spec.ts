@@ -1,3 +1,5 @@
+import assert from 'node:assert';
+import { describe, it } from "node:test";
 import { AuthEngine } from "../src/index.js";
 import { InvalidArgumentsError } from '@socket-mesh/errors';
 import jwt from 'jsonwebtoken';
@@ -9,12 +11,12 @@ describe('AuthEngine', () => {
     it('should return a Promise<string | JwtPayload>', async () => {
       const signedToken = jwt.sign({ sub: '123' }, 'secret');
       const result = await authEngine.verifyToken(signedToken, 'secret', { complete: true });
-      expect(result).toEqual(expect.any(Object));
+      assert(result instanceof Object);
     });
 
     it('should throw an InvalidArgumentsError when signedToken is not a string', async () => {
       const result = authEngine.verifyToken(123 as any, 'secret', { complete: true });
-      await expect(result).rejects.toThrow(InvalidArgumentsError);
+      await assert.rejects(result, InvalidArgumentsError);
     });
   });
 
@@ -22,7 +24,7 @@ describe('AuthEngine', () => {
     it('should return a Promise<string | undefined>', async () => {
       const token = { sub: '123' };
       const result = await authEngine.signToken(token, 'secret', { expiresIn: '1h' });
-      expect(result).toEqual(expect.any(String));
+      assert(typeof result === 'string');
     });
   });
 });
